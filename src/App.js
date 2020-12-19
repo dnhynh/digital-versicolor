@@ -1,11 +1,11 @@
 import React, {useState, useEffect} from 'react'
+import Dash from "./components/Dash"
+import TrackBlock from "./components/TrackBlock"
 import {getHashParams} from "./utils"
 const App = () =>  {
 
   const [auth, setAuth] = useState({})
   const [tracks, setTracks] = useState([])
-
-  console.log(tracks)
 
   const fetchRecent = async () => {
     const res = await fetch('https://api.spotify.com/v1/me/player/recently-played?limit=50', {
@@ -20,14 +20,20 @@ const App = () =>  {
     }
     const data = await res.json()
     const songs = []
-    if(data.length) {
+    console.log(data)
+    if(data.items) {
       for(let song of data.items) {
-        const {artists, name, preview_url:previewUrl} = song.track;
+        const {
+          artists, 
+          name, 
+          preview_url:previewUrl, 
+          external_urls:externalUrl
+        } = song.track;
         const features = await fetchAnalysis(song.track.id)
-        songs.push({artists, name, previewUrl, features})
+        songs.push({artists, name, previewUrl, externalUrl, features})
       }
-      setTracks(songs)
-    } 
+    }
+    setTracks(songs)
   }
 
   const fetchAnalysis = async (id) => {
@@ -40,17 +46,20 @@ const App = () =>  {
     return res.json()
   }
 
+  const allTrackBlocks = tracks.map((track) => <TrackBlock trackProperties={track}/>)
+
   useEffect(() => {
     setAuth(getHashParams())
+    if(auth) fetchRecent()
   }, [])
+
+  console.log(tracks)
 
   return (
     <div className="App">
-      <a href="http://localhost:8888/login">
-        <button>Login</button>
-      </a>
-      <button onClick={fetchRecent}>Get Recently Played</button>
-      <button onClick={fetchAnalysis}>Song Features</button>
+      <Dash fetchRecent={fetchRecent}/>
+      {/* {tracks ? <div>SONGS</div> : <Dash fetchRecent={fetchRecent}/> } */}
+      {allTrackBlocks}
     </div>
   );
 }
