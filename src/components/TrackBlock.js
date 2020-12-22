@@ -5,7 +5,6 @@ const TrackBlock = ({trackProperties}) => {
         artists,
         name,
         previewUrl,
-        externalUrl,
         features
     } = trackProperties;
 
@@ -16,11 +15,9 @@ const TrackBlock = ({trackProperties}) => {
     const preview = new Audio(previewUrl)
 
     return (
-        <div style={{border: '1px solid black'}} onMouseEnter={() => preview.play()} onMouseLeave={() => {preview.pause()}}>
-            <a href={externalUrl.spotify}>
-                {artistsElements}
-                <p>{name}</p>
-            </a>
+        <div style={{border: '1px solid black'}} onClick={() => preview.play()} >
+            {artistsElements}
+            <p>{name}</p>
         </div>
     )
 }
