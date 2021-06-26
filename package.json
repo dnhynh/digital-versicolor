@@ -9,9 +9,11 @@
     "querystring": "^0.2.0",
     "react": "^16.5.2",
     "react-dom": "^16.5.2",
+    "react-router-dom": "^5.2.0",
     "react-scripts": "2.0.5",
     "request": "^2.88.2",
     "spotify-web-api-js": "^1.5.1",
+    "styled-components": "^5.2.1",
     "update": "^0.7.4"
   },
   "scripts": {

@@ -39,7 +39,8 @@ app.get('/login', function(req, res) {
   res.cookie(stateKey, state);
 
   // your application requests authorization
-  var scope = 'user-read-private user-read-email user-read-playback-state user-read-recently-played';
+  var scope = process.env.PERMISSIONS;
+
   res.redirect('https://accounts.spotify.com/authorize?' +
     querystring.stringify({
       response_type: 'code',
@@ -74,6 +75,8 @@ app.get('/callback', function(req, res) {
         grant_type: 'authorization_code'
       },
       headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
         'Authorization': 'Basic ' + (new Buffer(client_id + ':' + client_secret).toString('base64'))
       },
       json: true

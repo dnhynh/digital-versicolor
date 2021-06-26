@@ -2,6 +2,13 @@ import React, {useState, useEffect} from 'react'
 import Dash from "./components/Dash"
 import TrackBlock from "./components/TrackBlock"
 import {getHashParams} from "./utils"
+import styled from "styled-components"
+
+const TracksContainer = styled.div`
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr
+`
+  
 const App = () =>  {
 
   const [auth, setAuth] = useState({})
@@ -11,6 +18,7 @@ const App = () =>  {
     const res = await fetch('https://api.spotify.com/v1/me/player/recently-played?limit=50', {
       method: 'GET',
       headers: {
+        Accept: "application/json",
         Authorization: `Bearer ${auth.access_token}`
       }
     })
@@ -20,17 +28,18 @@ const App = () =>  {
     }
     const data = await res.json()
     const songs = []
-    console.log(data)
     if(data.items) {
       for(let song of data.items) {
+        console.log(song)
         const {
           artists, 
-          name, 
+          name,
+          id,
           preview_url:previewUrl, 
           external_urls:externalUrl
-        } = song.track;
+        } = song.track
         const features = await fetchAnalysis(song.track.id)
-        songs.push({artists, name, previewUrl, externalUrl, features})
+        songs.push({artists, name, previewUrl, externalUrl, features, id})
       }
     }
     setTracks(songs)
@@ -46,22 +55,42 @@ const App = () =>  {
     return res.json()
   }
 
-  const allTrackBlocks = tracks.map((track) => <TrackBlock trackProperties={track}/>)
+  const getTop = async () => {
+    const artists = await fetch('https://api.spotify.com/v1/me/top/artists?time_range=short_term&limit=50', {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${auth.access_token}`
+      }
+    })
+    .then((res) => res.json())
+    console.log(artists)
+    return artists
+  } 
+
+  const allTrackBlocks = tracks.map((track) => <TrackBlock key={track.id} trackProperties={track}/>)
 
   useEffect(() => {
     setAuth(getHashParams())
-    if(auth) fetchRecent()
+    const trackData = sessionStorage.getItem('tracks')
+    if(trackData) {
+      setTracks(JSON.parse(trackData))
+    }
   }, [])
+
+  useEffect(() => {
+    sessionStorage.setItem('tracks', JSON.stringify(tracks))
+  }, [tracks])
 
   console.log(tracks)
 
   return (
     <div className="App">
-      <Dash fetchRecent={fetchRecent}/>
-      {/* {tracks ? <div>SONGS</div> : <Dash fetchRecent={fetchRecent}/> } */}
-      {allTrackBlocks}
+      <Dash fetchRecent={fetchRecent} getTop={getTop} auth={auth} />
+      <TracksContainer>
+        {/* {allTrackBlocks} */}
+      </TracksContainer>
     </div>
-  );
+  )
 }
 
-export default App;
+export default App
