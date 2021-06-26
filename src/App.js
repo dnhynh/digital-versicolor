@@ -14,6 +14,8 @@ const App = () =>  {
   const [auth, setAuth] = useState({})
   const [tracks, setTracks] = useState([])
 
+  console.log(auth)
+
   const fetchRecent = async () => {
     const res = await fetch('https://api.spotify.com/v1/me/player/recently-played?limit=50', {
       method: 'GET',

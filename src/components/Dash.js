@@ -27,7 +27,7 @@ const Dash = ({fetchRecent, getTop, auth}) => {
             <p>Digital Versicolor</p>
             <DashButton onClick={fetchRecent}>Get Recently Played</DashButton>
             <DashButton onClick={getTop}>Get Top Artists</DashButton>
-            {!auth && <DashButton onClick={() => {window.location="http://localhost:8888/login"}}>Login</DashButton>}
+            <DashButton onClick={() => {window.location="http://localhost:8888/login"}}>Login</DashButton>
         </Dashboard>
     )
 }
